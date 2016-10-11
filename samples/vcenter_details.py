@@ -38,7 +38,7 @@ def parse_service_instance(service_instance):
     object_view = content.viewManager.CreateContainerView(content.rootFolder,
                                                           [], True)
     for obj in object_view.view:
-        print obj
+        print(obj)
         if isinstance(obj, vim.VirtualMachine):
             vm.print_vm_info(obj)
 
@@ -72,8 +72,8 @@ def main():
         # ## Do the actual parsing of data ## #
         parse_service_instance(service_instance)
 
-    except vmodl.MethodFault, e:
-        print "Caught vmodl fault : " + e.msg
+    except vmodl.MethodFault as e:
+        print("Caught vmodl fault : {}".format(e.msg))
         return -1
 
     return 0
