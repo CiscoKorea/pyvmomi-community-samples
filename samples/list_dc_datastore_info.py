@@ -13,6 +13,7 @@
 
 import atexit
 import requests
+import ssl
 from tools import cli
 from pyVmomi import vim
 from pyVim.connect import SmartConnect, Disconnect
@@ -84,13 +85,15 @@ def print_datastore_info(ds_obj):
 
 def main():
     args = get_args()
-
+    context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+    context.verify_mode = ssl.CERT_NONE
     # connect to vc
     si = SmartConnect(
         host=args.host,
         user=args.user,
         pwd=args.password,
-        port=args.port)
+        port=int(args.port),
+        sslContext=context)
     # disconnect vc
     atexit.register(Disconnect, si)
 

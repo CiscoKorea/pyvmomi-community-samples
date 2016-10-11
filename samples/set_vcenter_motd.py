@@ -18,6 +18,7 @@ import argparse
 import pyVim.connect as connect
 import getpass
 import requests
+import ssl
 # Snippet borrowed from Michael Rice
 # https://gist.github.com/michaelrice/a6794a017e349fc65d01
 requests.packages.urllib3.disable_warnings()
@@ -72,10 +73,13 @@ else:
         prompt='Enter password for host %s and user %s: ' %
                (args.host, args.user))
 
+context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+context.verify_mode = ssl.CERT_NONE
 si = connect.SmartConnect(host=args.host,
                           user=args.user,
                           pwd=password,
-                          port=int(args.port))
+                          port=int(args.port),
+                          sslContext=context)
 
 print "logged in to %s" % args.host
 

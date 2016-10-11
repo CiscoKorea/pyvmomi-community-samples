@@ -19,7 +19,7 @@ import atexit
 import requests
 
 from pyVim.connect import SmartConnect, Disconnect
-
+import ssl
 from tools import cli
 
 requests.packages.urllib3.disable_warnings()
@@ -45,10 +45,13 @@ args = setup_args()
 si = None
 instance_search = False
 try:
+    context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+    context.verify_mode = ssl.CERT_NONE
     si = SmartConnect(host=args.host,
                       user=args.user,
                       pwd=args.password,
-                      port=int(args.port))
+                      port=int(args.port),
+                      sslContext=context)
     atexit.register(Disconnect, si)
 except IOError:
     pass

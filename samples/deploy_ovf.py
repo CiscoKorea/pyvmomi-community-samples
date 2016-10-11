@@ -17,7 +17,7 @@ from getpass import getpass
 
 from pyVim import connect
 from pyVmomi import vim
-
+import ssl
 
 def get_args():
     """
@@ -175,10 +175,13 @@ def main():
     args = get_args()
     ovfd = get_ovf_descriptor(args.ovf_path)
     try:
+        context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+        context.verify_mode = ssl.CERT_NONE
         si = connect.SmartConnect(host=args.host,
                                   user=args.user,
                                   pwd=args.password,
-                                  port=args.port)
+                                  port=args.port,
+                                  sslContext=context)
     except:
         print "Unable to connect to %s" % args.host
         exit(1)

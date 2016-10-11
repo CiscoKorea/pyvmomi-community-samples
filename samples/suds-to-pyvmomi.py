@@ -3,7 +3,7 @@
 import argparse
 import getpass
 import suds
-
+import ssl
 import pyVim.connect as connect
 
 # suds-to-pyvmomi.py
@@ -111,10 +111,13 @@ print "=" * 80
 print "suds session to pyvmomi "
 
 # Unfortunately, you can't connect without a login in pyVmomi
+context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+context.verify_mode = ssl.CERT_NONE
 si = connect.SmartConnect(host=args.host,
                           user=args.user,
                           pwd=password,
-                          port=int(args.port))
+                          port=int(args.port),
+                          sslContext=context)
 
 # logout the current session since we won't be using it.
 si.content.sessionManager.Logout()

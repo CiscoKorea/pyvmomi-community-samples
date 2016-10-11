@@ -13,6 +13,7 @@ This scrpt can be tailored to adjust more settings within
 import argparse
 import sys
 import atexit
+import ssl
 from pyVmomi import vim
 from pyVim.connect import Disconnect, SmartConnect
 sys.dont_write_bytecode = True
@@ -22,8 +23,10 @@ __author__ = 'humayunjamal'
 
 def get_connection(ipadd, user, password):
     try:
+        context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+        context.verify_mode = ssl.CERT_NONE
         connection = SmartConnect(
-            host=ipadd, port=443, user=user, pwd=password)
+            host=ipadd, port=443, user=user, pwd=password, sslContext=context)
     except Exception as e:
         print e
         raise SystemExit

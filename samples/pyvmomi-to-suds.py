@@ -4,6 +4,7 @@ import argparse
 import cookielib
 import getpass
 import suds
+import ssl
 
 import pyVim.connect as connect
 
@@ -81,11 +82,13 @@ def get_current_session(client):
 
 
 print "pyVmomi login... "
-
+context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+context.verify_mode = ssl.CERT_NONE
 si = connect.SmartConnect(host=args.host,
                           user=args.user,
                           pwd=password,
-                          port=int(args.port))
+                          port=int(args.port),
+                          sslContext=context)
 
 print "current session id: %s" % si.content.sessionManager.currentSession.key
 pyvmomi_cookie = si._stub.cookie

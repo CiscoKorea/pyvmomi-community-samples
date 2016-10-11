@@ -16,7 +16,7 @@ from tools import cli
 from tools import tasks
 from pyVim import connect
 from pyVmomi import vim, vmodl
-
+import ssl
 
 def get_obj(content, vimtype, name):
     """
@@ -67,10 +67,13 @@ def main():
     args = get_args()
 
     try:
+        context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+        context.verify_mode = ssl.CERT_NONE
         service_instance = connect.SmartConnect(host=args.host,
                                                 user=args.user,
                                                 pwd=args.password,
-                                                port=int(args.port))
+                                                port=int(args.port),
+                                                sslContext=context)
 
         atexit.register(connect.Disconnect, service_instance)
         content = service_instance.RetrieveContent()

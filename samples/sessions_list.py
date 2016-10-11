@@ -16,7 +16,7 @@
 
 import argparse
 import getpass
-
+import ssl
 import pyVim.connect as connect
 
 # Demonstrates some simple working with sessions actions. By common sense
@@ -66,10 +66,13 @@ else:
         prompt='Enter password for host %s and user %s: ' %
                (args.host, args.user))
 
+context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+context.verify_mode = ssl.CERT_NONE
 si = connect.SmartConnect(host=args.host,
                           user=args.user,
                           pwd=password,
-                          port=int(args.port))
+                          port=int(args.port),
+                          sslContext=context)
 
 print "logged in to %s" % args.host
 session_id = si.content.sessionManager.currentSession.key

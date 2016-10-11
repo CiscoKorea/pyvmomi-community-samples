@@ -17,6 +17,7 @@ from tools import cli
 from pyVmomi import vim
 from pyVim.connect import SmartConnect, Disconnect
 from tools import tasks
+import ssl
 
 # disable  urllib3 warnings
 if hasattr(requests.packages.urllib3, 'disable_warnings'):
@@ -101,13 +102,15 @@ def get_obj(content, vim_type, name):
 
 def main():
     args = get_args()
-
+    context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+    context.verify_mode = ssl.CERT_NONE
     # connect to vc
     si = SmartConnect(
         host=args.host,
         user=args.user,
         pwd=args.password,
-        port=args.port)
+        port=args.port,
+        sslContext=context)
     # disconnect vc
     atexit.register(Disconnect, si)
 

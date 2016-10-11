@@ -3,6 +3,7 @@
 from __future__ import print_function  # This import is for python2.*
 import atexit
 import requests
+import ssl
 
 from pyVim import connect
 from pyVmomi import vim
@@ -41,10 +42,13 @@ def main():
     try:
         service_instance = None
         try:
+            context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+            context.verify_mode = ssl.CERT_NONE        
             service_instance = connect.SmartConnect(host=args.host,
                                                     user=args.user,
                                                     pwd=args.password,
-                                                    port=int(args.port))
+                                                    port=int(args.port),
+                                                    sslContext=context)
         except IOError as e:
             pass
         if not service_instance:

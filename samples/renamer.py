@@ -24,6 +24,7 @@ import argparse
 import getpass
 import sys
 import time
+import ssl
 
 from pyVim import connect
 from pyVmomi import vim
@@ -75,8 +76,10 @@ def get_args():
 args = get_args()
 
 # form a connection...
+context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+context.verify_mode = ssl.CERT_NONE
 si = connect.SmartConnect(host=args.host, user=args.user, pwd=args.password,
-                          port=args.port)
+                          port=int(args.port), sslContext=context)
 
 # doing this means you don't need to remember to disconnect your script/objects
 atexit.register(connect.Disconnect, si)

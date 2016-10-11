@@ -8,7 +8,7 @@ This code has been released under the terms of the Apache 2.0 license
 http://opensource.org/licenses/Apache-2.0
 """
 import atexit
-
+import ssl
 from pyVim.connect import SmartConnect, Disconnect
 
 from tools import cluster
@@ -29,10 +29,13 @@ PARSER.add_argument("-c", "--cname",
 
 MY_ARGS = PARSER.parse_args()
 cli.prompt_for_password(MY_ARGS)
+context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+context.verify_mode = ssl.CERT_NONE
 SI = SmartConnect(host=MY_ARGS.host,
                   user=MY_ARGS.user,
                   pwd=MY_ARGS.password,
-                  port=MY_ARGS.port)
+                  port=int(MY_ARGS.port),
+                  sslContext=context)
 
 atexit.register(Disconnect, SI)
 dc = datacenter.create_datacenter(dcname=MY_ARGS.dcname, service_instance=SI)

@@ -24,6 +24,7 @@ import atexit
 import urllib2
 import urlparse
 import base64
+import ssl
 
 
 VMX_PATH = []
@@ -208,10 +209,13 @@ def main():
     try:
         si = None
         try:
+            context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+            context.verify_mode = ssl.CERT_NONE    
             si = SmartConnect(host=args.host,
                               user=args.user,
                               pwd=args.password,
-                              port=int(args.port))
+                              port=int(args.port),
+                              sslContext=context)
         except IOError, e:
             pass
 

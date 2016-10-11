@@ -22,6 +22,7 @@ a friendly encouragement to joining the community!
 import atexit
 import argparse
 import getpass
+import ssl
 
 import vcr
 
@@ -79,10 +80,13 @@ def main():
         # use the vcr instance to setup an instance of service_instance
         with my_vcr.use_cassette('hello_world_vcenter.yaml',
                                  record_mode='all'):
+            context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+            context.verify_mode = ssl.CERT_NONE
             service_instance = connect.SmartConnect(host=args.host,
                                                     user=args.user,
                                                     pwd=args.password,
-                                                    port=int(args.port))
+                                                    port=int(args.port),
+                                                    sslContext=context)
             # the recording will show up in the working directory
 
         atexit.register(connect.Disconnect, service_instance)

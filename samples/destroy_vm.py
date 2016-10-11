@@ -16,7 +16,7 @@
 from __future__ import print_function
 
 import atexit
-
+import ssl
 import requests
 from pyVim import connect
 
@@ -50,10 +50,13 @@ def setup_args():
 ARGS = setup_args()
 SI = None
 try:
+    context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+    context.verify_mode = ssl.CERT_NONE
     SI = connect.SmartConnect(host=ARGS.host,
                               user=ARGS.user,
                               pwd=ARGS.password,
-                              port=ARGS.port)
+                              port=ARGS.port,
+                              sslContext=context)
     atexit.register(connect.Disconnect, SI)
 except IOError, ex:
     pass

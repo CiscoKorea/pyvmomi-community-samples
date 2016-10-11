@@ -19,7 +19,8 @@ Python program for listing the vms on an ESX / vCenter host
 """
 
 import atexit
-
+import requests
+import ssl
 from pyVim import connect
 from pyVmomi import vmodl
 from pyVmomi import vim
@@ -63,7 +64,7 @@ def main():
     """
     Simple command-line program for listing the virtual machines on a system.
     """
-
+    validate_certs = False
     args = cli.get_args()
 
     try:
@@ -71,7 +72,13 @@ def main():
                                                 user=args.user,
                                                 pwd=args.password,
                                                 port=int(args.port))
-
+    except (requests.ConnectionError, ssl.SSLError) as connection_error:
+        print("catch exception and going next")
+        if '[SSL: CERTIFICATE_VERIFY_FAILED]' in str(connection_error) and not validate_certs:
+            context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+            context.verify_mode = ssl.CERT_NONE
+            service_instance = connect.SmartConnect(host=args.host, user=args.user, pwd=args.password, sslContext=context)
+ 
         atexit.register(connect.Disconnect, service_instance)
 
         content = service_instance.RetrieveContent()
@@ -84,6 +91,9 @@ def main():
 
         children = containerView.view
         for child in children:
+            #print child, type(child), dir(child)
+            for cnet in child.network:
+                print cnet.name, cnet.summary
             print_vm_info(child)
 
     except vmodl.MethodFault as error:

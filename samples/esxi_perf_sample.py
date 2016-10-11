@@ -15,7 +15,7 @@ import datetime
 from pyVim import connect
 from pyVmomi import vmodl
 from pyVmomi import vim
-
+import ssl
 
 def get_args():
     """
@@ -67,10 +67,13 @@ def main():
 
     args = get_args()
     try:
+        context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+        context.verify_mode = ssl.CERT_NONE        
         service_instance = connect.SmartConnect(host=args.host,
                                                 user=args.user,
                                                 pwd=args.password,
-                                                port=int(args.port))
+                                                port=int(args.port),
+                                                sslContext=context)
         if not service_instance:
             print("Could not connect to the specified host using specified "
                   "username and password")

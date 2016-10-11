@@ -10,7 +10,7 @@ http://opensource.org/licenses/Apache-2.0
 from __future__ import print_function
 
 import atexit
-
+import ssl
 from pyVim.connect import SmartConnect, Disconnect
 
 from tools import alarm
@@ -28,10 +28,13 @@ PARSER.add_argument("-x", "--uuid",
                          " for.")
 MY_ARGS = PARSER.parse_args()
 cli.prompt_for_password(MY_ARGS)
+context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+context.verify_mode = ssl.CERT_NONE
 SI = SmartConnect(host=MY_ARGS.host,
                   user=MY_ARGS.user,
                   pwd=MY_ARGS.password,
-                  port=MY_ARGS.port)
+                  port=MY_ARGS.port,
+                  sslContext=context)
 
 atexit.register(Disconnect, SI)
 INDEX = SI.content.searchIndex

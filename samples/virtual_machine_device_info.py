@@ -18,6 +18,7 @@ from __future__ import print_function
 import atexit
 import argparse
 import getpass
+import ssl
 
 from pyVim import connect
 
@@ -204,8 +205,10 @@ def get_args():
 args = get_args()
 
 # form a connection...
+context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+context.verify_mode = ssl.CERT_NONE
 si = connect.SmartConnect(host=args.host, user=args.user, pwd=args.password,
-                          port=args.port)
+                          port=int(args.port), sslContext=context)
 
 # Note: from daemons use a shutdown hook to do this, not the atexit
 atexit.register(connect.Disconnect, si)

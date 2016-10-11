@@ -15,7 +15,7 @@ from pyVmomi import vim
 from pyVim.connect import SmartConnect
 from pyVim.task import WaitForTask
 from tools import cli
-
+import ssl
 __author__ = 'prziborowski'
 
 # Prerequisite for VM (for simplicity sake)
@@ -82,7 +82,9 @@ def new_cdrom_spec(controller_key, backing):
 
 def main():
     args = setup_args()
-    si = SmartConnect(host=args.host, user=args.user, pwd=args.password)
+    context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+    context.verify_mode = ssl.CERT_NONE
+    si = SmartConnect(host=args.host, user=args.user, pwd=args.password, sslContext=context)
     if args.datacenter:
         dc = get_dc(si, args.datacenter)
     else:
