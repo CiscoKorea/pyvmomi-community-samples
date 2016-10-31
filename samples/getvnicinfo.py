@@ -23,12 +23,31 @@ import atexit
 import sys
 import ssl
 
+
+def GetCluster( folder):
+    for entity in folder.childEntity:
+       print("Folder Entity name = %s" %(entity.name))
+
+def GetDatacenters(content):
+    print("Getting all Datacenter...")
+    dc_view = content.viewManager.CreateContainerView(content.rootFolder, [vim.Datacenter], True)
+    obj = [ dc for dc in dc_view.view]
+    for dc in obj:
+       print("Datacenter %s" %(dc.name))
+       GetCluster( dc.hostFolder) 
+    dc_view.Destroy()
+    return obj
+
 def GetVMHosts(content):
     print("Getting all ESX hosts ...")
     host_view = content.viewManager.CreateContainerView(content.rootFolder,
                                                         [vim.HostSystem],
                                                         True)
     obj = [host for host in host_view.view]
+    #for host in obj:
+        #prod = host.config.product
+        #print("{name}  {version}  {apiType}  {fullName}".format(prod))
+        #print(" host detail = %(name)s, %(version)s, %(apiType)s, %(fullName)s" % (prod))
     host_view.Destroy()
     return obj
 
@@ -126,6 +145,7 @@ def main():
                                    sslContext=context)
     atexit.register(Disconnect, serviceInstance)
     content = serviceInstance.RetrieveContent()
+    dcs = GetDatacenters(content)
     hosts = GetVMHosts(content)
     hostPgDict = GetHostsPortgroups(hosts)
     vms = GetVMs(content)
