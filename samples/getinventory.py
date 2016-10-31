@@ -22,12 +22,12 @@ def GetPortgroup( portgroups):
 def GetNetwork( network):
     global pnicmap
     for nic in network.pnic:
-        print("pnic key: %s name: %s " %(nic.key, nic.device))
+        #print("pnic key: %s name: %s " %(nic.key, nic.device))
         pnicmap[ nic.key] = nic.device
     for pg in network.portgroup:
     	pnicmap[ pg.key] = pg.spec.name +":"+str(pg.spec.vlanId)
     for nic in network.vnic:
-        print("vnic name: %s connected portgroup: %s" %(nic.device, nic.portgroup))
+        #print("vnic name: %s connected portgroup: %s" %(nic.device, nic.portgroup))
     for sw in network.vswitch:
 #    	print("vSwitch name: %s, numPort: %d pnics: %s" %(sw.name, sw.numPorts, sw.pnic))
     	print("vSwicth name: %s uplink: %s portgroup: %s" %(sw.name, GetUplink(sw.pnic), GetPortgroup(sw.portgroup)))
